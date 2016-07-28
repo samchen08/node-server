@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var log4js = require('log4js');
 
 var config = require('./package.json');
-var logger = require('./logger').logger('http');
+var logger = require('./logger').logger('normal');
 var routers = require('./server/router');
 
 function setMethod(app, type, url, handler) {
@@ -37,8 +37,10 @@ function setRouter(app, url, item) {
 function initRouter(app) {
     var url, item;
     for (url in routers) {
-        item = routers[url];
-        setRouter(app, url, item);
+        if (routers.hasOwnProperty(url)) {
+            item = routers[url];
+            setRouter(app, url, item);
+        }
     }
 }
 
@@ -53,12 +55,15 @@ module.exports = {
         app.use(log4js.connectLogger(logger, {level: log4js.levels.INFO}));
         app.use(express.static(path.join(__dirname, 'static')));
         app.use(favicon(path.join(__dirname, 'static/favicon.ico')));
+
         app.use(session({
             resave: true,
             saveUninitialized: true,
             secret: 'uwotm8'
         }));
+
         app.use(bodyParser.json());
+
         app.use(bodyParser.urlencoded({
             extended: true
         }));
@@ -66,7 +71,7 @@ module.exports = {
         initRouter(app);
 
         app.listen(app.get('port'), function () {
-            console.log('Express server listening on port ', app.get('port'));
+            logger.info('Express server listening on port ', app.get('port'));
         });
 
     }

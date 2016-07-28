@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "server side project template for node",
   "httpPort": 8080,
+  "debug": true,
   "log4js": {
     "appenders": [
       {
